@@ -1,0 +1,372 @@
+/* Common measurement units (u_ prefix) */
+/* colour palette */
+/* Animation speeds */
+.ani_height {
+  overflow: hidden;
+  transition-duration: 500ms; }
+
+@keyframes fadein_opacity {
+  from {
+    opacity: 0; }
+  to {
+    opacity: 1; } }
+/* Firefox */
+@-moz-keyframes fadein_opacity {
+  from {
+    opacity: 0; }
+  to {
+    opacity: 1; } }
+/* Common and resets */
+* {
+  box-sizing: border-box; }
+
+.emon_bolt path {
+  fill: #CCFF00; }
+
+.smalltext, .navlist .details, label {
+  font-size: 11px;
+  color: #999; }
+
+h2, p {
+  margin: 16px 0; }
+
+[v-cloak] {
+  display: none; }
+
+html {
+  background: url("bg_noise.png") repeat #424242;
+  -webkit-animation: fadein_opacity 0.4s;
+  /* Safari and Chrome */
+  -moz-animation: fadein_opacity 0.4s;
+  /* Firefox */
+  -ms-animation: fadein_opacity 0.4s;
+  /* Internet Explorer */
+  -o-animation: fadein_opacity 0.4s;
+  /* Opera */
+  animation: fadein_opacity 0.4s; }
+
+body {
+  font-family: verdana,arial,sans-serif;
+  font-size: 14px;
+  margin: 0;
+  min-height: 100vh; }
+
+.pagesection {
+  overflow: hidden;
+  padding: 16px; }
+
+.pagesection > * {
+  margin: auto;
+  max-width: 500px; }
+
+.component {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 3px; }
+  .component .ui__header {
+    background: #eee;
+    display: flex;
+    justify-content: space-between;
+    overflow: hidden; }
+    .component .ui__header .heading {
+      font-size: 14px;
+      margin: 0 8px;
+      line-height: 30px;
+      white-space: nowrap; }
+    .component .ui__header .controls > *:last-child {
+      border-top-right-radius: 2px; }
+
+.content {
+  margin: 16px; }
+
+.grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-column-gap: 8px;
+  margin: 16px 0; }
+  .grid-4 > * {
+    margin: 0; }
+
+/* Tabs */
+.tabs {
+  background: #333;
+  color: #999;
+  overflow: hidden;
+  padding: 3px 6px 0 6px; }
+
+.tabs__tab {
+  color: #ccc;
+  display: block;
+  float: left;
+  font-weight: bold;
+  padding: 8px 20px;
+  text-decoration: none; }
+
+.tabs__tab > * {
+  margin: 0; }
+
+.tabs__tab.active {
+  background: #f4f4f4;
+  color: #333; }
+
+.tabs__content {
+  display: none; }
+
+.tabs__content.active {
+  display: block; }
+
+.banner {
+  background: #333;
+  color: #999;
+  overflow: hidden; }
+
+.banner__title {
+  font-weight: 400;
+  padding: 10px; }
+
+button, .button {
+  background: none;
+  border: 1px solid #ccc;
+  color: #000;
+  display: inline-block;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 8px 16px;
+  text-decoration: none; }
+  button:hover, .button:hover {
+    background: #f4f8ff;
+    cursor: pointer; }
+  button:disabled, .button:disabled {
+    background: none;
+    color: #ccc; }
+
+.button--inv {
+  border: none;
+  padding: 0; }
+
+.button--inv + .button--inv {
+  padding-left: 16px; }
+
+.active button, .active .button {
+  color: #1958c6; }
+
+.btn_close {
+  background: #a36c76;
+  display: block;
+  height: 30px;
+  overflow: hidden;
+  position: relative;
+  text-indent: 100%;
+  width: 30px;
+  transition: background-color 0.2s ease; }
+  .btn_close:hover {
+    background: #aa233b;
+    transition: background-color 0.8s ease; }
+  .btn_close svg {
+    fill: #fff;
+    position: absolute;
+    left: 0;
+    top: 0; }
+
+.modal-mask {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: table;
+  transition: opacity .3s ease; }
+
+.modal-wrapper {
+  display: table-cell;
+  vertical-align: middle; }
+
+.modal-container {
+  width: 300px;
+  margin: 0px auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+  transition: all .3s ease;
+  font-family: Helvetica, Arial, sans-serif; }
+
+.modal-header h3 {
+  margin-top: 0;
+  color: #42b983; }
+
+.modal-body {
+  margin: 20px 0; }
+
+.modal-default-button {
+  float: right; }
+
+/*
+ * The following styles are auto-applied to elements with
+ * transition="modal" when their visibility is toggled
+ * by Vue.js.
+ *
+ * You can easily play with the modal transition by editing
+ * these styles.
+ */
+.modal-enter {
+  opacity: 0; }
+
+.modal-leave-active {
+  opacity: 0; }
+
+.modal-enter .modal-container,
+.modal-leave-active .modal-container {
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1); }
+
+.navlist {
+  list-style: none;
+  margin: 0;
+  padding: 0; }
+  .navlist li + li {
+    border-top: 1px solid #e8e8e8; }
+  .navlist li > a {
+    color: #000;
+    display: block;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color 0.2s ease; }
+  .navlist li > a:hover,
+  .navlist li > a.active {
+    background: #f4f8ff;
+    transition: background-color 0.4s ease; }
+  .navlist li > a.active:hover {
+    background: #DCEAFF;
+    transition: background-color 0.8s ease; }
+  .navlist .details {
+    float: right; }
+
+.navlist + .navlist {
+  border-top: 1px solid #ccc; }
+
+.mainmenu {
+  list-style: none;
+  max-width: 330px;
+  margin: auto;
+  padding: 0;
+  display: grid;
+  grid-auto-rows: 1fr; }
+  .mainmenu .details {
+    display: block;
+    font-size: 11px;
+    color: #999; }
+  .mainmenu li {
+    -moz-transition: all 0.4s ease-in;
+    -o-transition: all 0.4s ease-in;
+    -webkit-transition: all 0.4s ease-in;
+    transition: all 0.4s ease-in;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid rgba(61, 61, 61, 0);
+    border-bottom: 1px solid rgba(61, 61, 61, 0); }
+  .mainmenu li + li {
+    border-top-color: #575757; }
+  .mainmenu li > a {
+    color: #e8e8e8;
+    display: block;
+    padding: 16px;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+    width: 100%; }
+  .mainmenu li:hover {
+    -moz-transition: all ani_fast ease-in;
+    -o-transition: all ani_fast ease-in;
+    -webkit-transition: all ani_fast ease-in;
+    transition: all ani_fast ease-in;
+    border-top-color: #CCFF00;
+    border-bottom-color: #CCFF00;
+    z-index: 10; }
+
+/* Forms */
+form {
+  margin: 16px; }
+
+form > *:first-child {
+  margin-top: 0; }
+
+form > *:last-child {
+  margin-bottom: 0; }
+
+label {
+  line-height: 1.6; }
+
+label > * {
+  color: #000;
+  display: block; }
+
+fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0; }
+  fieldset > *:first-child {
+    margin-top: 0; }
+
+fieldset + fieldset {
+  border-top: 1px solid #ccc;
+  padding-top: 16px; }
+
+input[type="text"],
+input[type="number"],
+input[type="password"],
+select {
+  border: 1px solid #ccc;
+  max-width: 300px;
+  padding: 4px;
+  width: 100%; }
+
+.masthead {
+  padding: 32px 16px;
+  text-align: center; }
+  .masthead a {
+    display: inline-block; }
+  .masthead > svg {
+    display: block;
+    margin: auto; }
+
+.accordion {
+  height: 0;
+  overflow: hidden; }
+
+.accordion.active {
+  background: #f4f8ff; }
+
+table {
+  border-collapse: collapse;
+  border-bottom: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+  width: 100%; }
+
+tr + tr {
+  border-top: 1px dotted #e8e8e8; }
+
+td {
+  padding: 8px; }
+
+.alert > div {
+  border: 1px solid;
+  border-radius: 3px;
+  margin: auto;
+  max-width: 500px;
+  padding: 0 16px; }
+
+.alert.info > div {
+  background: #fff;
+  border-color: #ccc; }
+
+.alert.success > div {
+  background: #89984fcc;
+  border-color: #CCFF00;
+  color: #fff; }
+
+.alert.failure > div {
+  background: #5f2d36;
+  border-color: #aa233b;
+  color: #fff; }

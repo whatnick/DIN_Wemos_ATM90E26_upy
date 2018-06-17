@@ -1,0 +1,36 @@
+{% args network, logger, version  %}
+
+<!DOCTYPE html>
+<html lang="en">
+    {% include 'head.tpl' %}
+	<body>
+       {% include 'masthead.tpl' %}
+        <div class="pagesection">
+            <ul class="mainmenu">
+                <li>
+                    <a href="/networks">
+                        Manage network connection
+                        <span class="details">Direct access point, no network connected.</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/logging">
+                        Data logging service
+                        <span class="details">Data stored locally only.</span></a>
+                </li>
+                <li>
+                    <a href="/hardware">
+                        Configure hardware
+                    </a>   
+                </li>
+                <li>
+                    <a href="/firmware">
+                        Update firmware
+                        <span class="details">Current version: 0.0.1</span>
+                    </a>            
+                </li>
+            </ul>
+        </div>
+       {% include 'footer.tpl' %}
+	</body>
+</html>

@@ -1,0 +1,28 @@
+{% args version, latest %}
+
+<!DOCTYPE html>
+<html lang="en">
+    {% include 'head.tpl' %}
+	<body>
+       {% include 'masthead.tpl' %}
+         <div class="pagesection">
+            <div class="component">
+                {% include 'component_header.tpl' 'Firmware' %}
+                <div class="ui__body">
+                    <div class="content">
+                        <h3>Version</h3>
+                        <table>
+                            <tr><td>Installed firmware version</td><td>{{ version }}</td></tr>
+                            <tr><td>Latest stable firmware version</td><td>{{ latest }}</td></tr>
+                        </table>
+                        <p>Firmware is open-source and comes with no gaurantees or warranties. Great care is made to ensure upgrades are of the highest quality and free of errors. In the (unlikely) instance a firmware update disbles functionality of this energy monitor please alert Whatnick.</p>
+                    </div>
+                    <form class="form form__firmaware">
+                        <p><button>Install firmware</button></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+       {% include 'footer.tpl' %}
+	</body>
+</html>

@@ -2,31 +2,20 @@ from machine import I2C,Pin,SPI
 from ssd1306 import SSD1306_I2C
 import socket
 from atm90e26_SPI import *
+from wifiConnect import do_connect
+import ntptime
 
-def do_connect():
-    import network
-    sta_if = network.WLAN(network.STA_IF)
-    if not sta_if.isconnected():
-        print('connecting to network...')
-        sta_if.active(True)
-        sta_if.connect('linuxconfau', 'sydney2018')
-        while not sta_if.isconnected():
-            pass
-    print('network config:', sta_if.ifconfig())
+CARBON_PORT = 2003
+CARBON_SERVER = '192.168.1.145'
 
-def http_get(url):
-    _, _, host, path = url.split('/', 3)
-    addr = socket.getaddrinfo(host, 80)[0][-1]
-    s = socket.socket()
-    s.connect(addr)
-    s.send(bytes('GET /%s HTTP/1.0\r\nHost: %s\r\n\r\n' % (path, host), 'utf8'))
-    while True:
-        data = s.recv(100)
-        if data:
-            print(str(data, 'utf8'), end='')
-        else:
-            break
-    s.close()
+def graphite_send(var,val):
+	import socket
+	message = 'whatnick.emon.%s %f %d\n' % (var,val,int(time.time()))
+	sock = socket.socket()
+	sock.connect((CARBON_SERVER, CARBON_PORT))
+	sock.sendall(message)
+	sock.close()
+
 
 i2c = I2C(scl=Pin(5),sda=Pin(4),freq=100000)
 lcd = SSD1306_I2C(64,48,i2c)
@@ -41,8 +30,9 @@ miso = machine.Pin(12,machine.Pin.IN)
 cs1 = machine.Pin(0,machine.Pin.OUT)
 cs2 = machine.Pin(15,machine.Pin.OUT)
 
-do_connect()
+do_connect("Coffee","coffee254")
 time.sleep(2)
+ntptime.settime()
 
 spi = machine.SPI(baudrate=200000,bits=8,polarity=1,phase=1,firstbit=machine.SPI.MSB,sck=sck,mosi=mosi,miso=miso)
 
@@ -68,9 +58,9 @@ while True:
 		lcd.text("V:"+str(voltage),0,12)
 		lcd.text("I:"+str(current),0,24)
 		lcd.show()
-
-		url = 'https://emoncms.org/input/post?json={power'+str(ic_id)+':'+str(power)+'}&apikey=API_KEY'
-		http_get(url)
+		
+		graphite_send("pow"+str(ic_id),power)
+		
 		ic_id += 1
 		time.sleep(1)
 	lcd.fill(0)

@@ -1,0 +1,53 @@
+{% args config, alert %}
+
+<!DOCTYPE html>
+<html lang="en">
+    {% include 'head.tpl' %}
+	<body>
+       {% include 'masthead.tpl' %}
+        {% if alert.message %}
+            {% include 'alert.tpl' %}
+        {% endif %}
+        <div class="pagesection">
+            <div class="component">
+                {% include 'component_header.tpl' 'Device configuration' %}
+                <div class="ui__body">
+                    <div class="content">
+                        <p>Some explaination needed? ...</p>
+                    </div>
+                    <form method="post" class="form form__device">
+                        {% for circuit in config %}
+                        <fieldset>
+                                <h2>{{ circuit.name }}</h2>
+                                <div class="grid-4">
+                                    <p>
+                                        <label>
+                                        CRC1 <input name="{{circuit.name}}_crc1" type="text" value="{{ circuit.crc1 }}">
+                                        </label>
+                                    </p>
+                                    <p>
+                                        <label>
+                                        CRC2 <input name="{{circuit.name}}_crc2" type="text" value="{{ circuit.crc2 }}">
+                                        </label>
+                                    </p>
+                                    <p>
+                                        <label>
+                                        Gain <input name="{{circuit.name}}_gain" type="text" value="{{ circuit.gain }}">
+                                        </label>
+                                    </p>
+                                    <p>
+                                        <label>
+                                        U-Gain <input name="{{circuit.name}}_ugain" type="text" value="{{ circuit.ugain }}">
+                                        </label>
+                                    </p>
+                                </div>
+                        </fieldset>
+                        {% endfor %}
+                        <p><a class="button" href="/">Cancel</a> <button type="submit" name="save">Save</button></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+       {% include 'footer.tpl' %}
+	</body>
+</html>
