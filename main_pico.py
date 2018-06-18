@@ -4,6 +4,10 @@ import uasyncio
 import picoweb
 import ure as re
 
+from wifiConnect import *
+do_connect('blynkspot','blynkpass')
+ip = get_ip()
+
 # Temporary data
 import temp_data
 network_list = temp_data.networks()
@@ -93,4 +97,4 @@ def device(req, resp):
 import logging
 logging.basicConfig(level=logging.INFO)
 
-app.run(debug=True)
+app.run(debug=True, host = ip)

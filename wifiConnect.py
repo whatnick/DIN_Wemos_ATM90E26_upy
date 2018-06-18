@@ -9,4 +9,10 @@ def do_connect(ssid,password):
         sta_if.connect(ssid,password)
         while not sta_if.isconnected():
             pass
-    print('network config:', sta_if.ifconfig())
+	ip = sta_if.ifconfig()[0]
+	return ip
+
+def get_ip():
+	sta_if = network.WLAN(network.STA_IF)
+	if(sta_if.isconnected()):
+		return sta_if.ifconfig()[0]
