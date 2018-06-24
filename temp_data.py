@@ -5,10 +5,13 @@
 ####################################
 # Logging services
 
+
 class Log_ts:
     def __init__(self, key=''):
         self.name = "ThingSpeak"
         self.key = key
+
+
 class Log_awsiot:
     def __init__(self, cert='', key='', subdomain='', region=''):
         self.name = "AWS IoT"
@@ -17,8 +20,9 @@ class Log_awsiot:
         self.subdomain = subdomain
         self.region = region
 
+
 log_ts = Log_ts()
-log_aws = Log_awsiot('myCert.pem','myKey.key','myIoT','ap-southeast-2')
+log_aws = Log_awsiot('myCert.pem', 'myKey.key', 'myIoT', 'ap-southeast-2')
 active_logger = "AWS IoT"
 
 ####################################
@@ -27,6 +31,7 @@ active_logger = "AWS IoT"
 version = "0.0.0.3"
 latest = "0.0.1.1"
 
+
 class Eci:
     def __init__(self, name):
         self.name = name
@@ -34,11 +39,11 @@ class Eci:
         self.crc2 = 0
         self.gain = 0
         self.ugain = 0
-        
 
-config = [ Eci('ECI1'), Eci('ECI2')]
 
- 
+config = [Eci('ECI1'), Eci('ECI2')]
+
+
 ####################################
 # Networks
 
@@ -54,6 +59,6 @@ class Network:
 ####################################
 # Alerts
 class Alert:
-    def __init__(self,type='info',message=''):
+    def __init__(self, type='info', message=''):
         self.type = type
         self.message = message
