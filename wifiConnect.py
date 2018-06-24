@@ -1,5 +1,7 @@
 import network
 from temp_data import Network
+import machine
+import ubinascii
 
 
 def do_connect(ssid, password):
@@ -38,6 +40,6 @@ def scan_networks():
 def start_ap():
     ap = network.WLAN(network.AP_IF)
     ap.active(True)
-    ap.config(essid='EMON')
+    ap.config(essid='EMON_'+str(ubinascii.hexlify(machine.unique_id()))[-4:])
     ap.config(authmode=3, password='whatnick')
     return ap
