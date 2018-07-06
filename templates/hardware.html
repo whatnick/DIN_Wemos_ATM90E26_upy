@@ -1,49 +1,71 @@
-{% args config, alert %}
+{% args db %}
 
 <!DOCTYPE html>
 <html lang="en">
     {% include 'head.tpl' %}
 	<body>
        {% include 'masthead.tpl' %}
-        {% if alert.message %}
-            {% include 'alert.tpl' %}
-        {% endif %}
         <div class="pagesection">
             <div class="component">
                 {% include 'component_header.tpl' 'Device configuration' %}
                 <div class="ui__body">
                     <div class="content">
-                        <p>Registers to calibrate ATM90E26 IC</p>
+                        <p>Some explaination needed? ...</p>
                     </div>
                     <form method="post" class="form form__device">
-                        {% for circuit in config %}
                         <fieldset>
-                                <h2>{{ circuit.name }}</h2>
+                                <h2>ECI 1</h2>
                                 <div class="grid-4">
                                     <p>
                                         <label>
-                                        CRC1 <input name="{{circuit.name}}_crc1" type="text" value="{{ circuit.crc1 }}">
+                                        CRC1 <input name="eci1_crc1" type="text" value="{{ db['eci1_crc1'].decode('utf-8') }}">
                                         </label>
                                     </p>
                                     <p>
                                         <label>
-                                        CRC2 <input name="{{circuit.name}}_crc2" type="text" value="{{ circuit.crc2 }}">
+                                        CRC2 <input name="eci1_crc2" type="text" value="{{ db['eci1_crc2'].decode('utf-8') }}">
                                         </label>
                                     </p>
                                     <p>
                                         <label>
-                                        Gain <input name="{{circuit.name}}_gain" type="text" value="{{ circuit.gain }}">
+                                        Gain <input name="eci1_gain" type="text" value="{{ db['eci1_gain'].decode('utf-8') }}">
                                         </label>
                                     </p>
                                     <p>
                                         <label>
-                                        U-Gain <input name="{{circuit.name}}_ugain" type="text" value="{{ circuit.ugain }}">
+                                        U-Gain <input name="eci1_ugain" type="text" value="{{ db['eci1_ugain'].decode('utf-8') }}">
                                         </label>
                                     </p>
                                 </div>
                         </fieldset>
-                        {% endfor %}
-                        <p><a class="button" href="/">Cancel</a> <button type="submit" name="save">Save</button></p>
+                        <fieldset>
+                                <h2>ECI 2</h2>
+                                <div class="grid-4">
+                                    <p>
+                                        <label>
+                                        CRC1 <input name="eci2_crc1" type="text" value="{{ db['eci2_crc1'].decode('utf-8') }}">
+                                        </label>
+                                    </p>
+                                    <p>
+                                        <label>
+                                        CRC2 <input name="eci2_crc2" type="text" value="{{ db['eci2_crc2'].decode('utf-8') }}">
+                                        </label>
+                                    </p>
+                                    <p>
+                                        <label>
+                                        Gain <input name="eci2_gain" type="text" value="{{ db['eci2_gain'].decode('utf-8') }}">
+                                        </label>
+                                    </p>
+                                    <p>
+                                        <label>
+                                        U-Gain <input name="eci2_ugain" type="text" value="{{ db['eci2_ugain'].decode('utf-8') }}">
+                                        </label>
+                                    </p>
+                                </div>
+                        </fieldset>
+                        
+                        
+                        <p><a class="button" href="/">Cancel</a> <button type="submit" name="submit">Save</button></p>
                     </form>
                 </div>
             </div>

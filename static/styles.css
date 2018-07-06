@@ -75,6 +75,10 @@ body {
       white-space: nowrap; }
     .component .ui__header .controls > *:last-child {
       border-top-right-radius: 2px; }
+  .component .ui__footer {
+    background: #eee;
+    padding: 4px;
+    text-align: center; }
 
 .content {
   margin: 16px; }
@@ -323,10 +327,13 @@ select {
   width: 100%; }
 
 .masthead {
-  padding: 32px 16px;
-  text-align: center; }
+  text-align: center;
+  padding-top: 16px; }
   .masthead a {
-    display: inline-block; }
+    background: url("ident_emon.png") no-repeat center center;
+    display: inline-block;
+    height: 80px;
+    width: 88px; }
   .masthead > svg {
     display: block;
     margin: auto; }

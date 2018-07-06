@@ -1,4 +1,4 @@
-{% args networks %}
+{% args networks, connected_network %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -10,15 +10,15 @@
                {% include 'component_header.tpl' 'Networks' %}
                 <div class="ui__body">
                      <ul class="navlist">
-                        {% for network in networks %}
+                        {% for key, network in enumerate(networks) %}
                         <li>
                             <a 
-                                v-on:click.prevent="accordion($event, {{ network.id }})"
-                                :class="linkClasses({{ network.id }})"
+                                v-on:click.prevent="accordion($event, {{ key }})"
+                                :class="linkClasses({{ key }})"
                                 href="#"
                             >
                                 {{ network.ssid }}
-                                {% if network.connected %}<span class="details"> Connected</span>
+                                {% if network.ssid == connected_network %}<span class="details"> Connected</span>
                                 {% elif network.pwd %}<span class="details"> Remembered</span>{% endif %}
                             </a>
                             {% include 'network_details.tpl' %}
