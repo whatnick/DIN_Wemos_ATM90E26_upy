@@ -16,7 +16,12 @@
                 <li>
                     <a href="/logging">
                         Data logging service
-                        <span class="details">Logging service: {{ logger }}</span></a>
+                        {% if logger %}
+                        <span class="details">Logging service: {{ logger }}</span>
+                        {% else %}
+                        <span class="details">No service selected</span>
+                        {% endif %}
+                    </a>
                 </li>
                 <li>
                     <a href="/hardware">

@@ -1,1 +1,1 @@
-<script src="/static/vendor/vue_development.js"></script>
+<script src="/static/vendor/vue.min.js"></script>

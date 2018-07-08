@@ -17,9 +17,9 @@ if first_run:
     start_ap()
 else:
     do_connect('blynkspot', 'blynkpass')
-
 ip = get_ip()   
-network_list = scan_networks()
+
+#ip = "127.0.0.1"
 
 app = picoweb.WebApp(None)
 
@@ -30,28 +30,24 @@ class Alert:
         self.message = message
         
         
-class Network:
-    def __init__(self, ssid, pwd=None):
-        self.ssid = ssid
-        self.pwd = pwd
-    
-    def __str__(self):
-        return self.ssid 
-
-
 @app.route("/")
 def index(req, resp):
     gc.collect()
+    f = open("datastore/logger.db", "r+b")
+    db = btree.open(f)
+    logger = db['service'].decode('utf-8')
+    db.close()
+    f.close() 
     # TODO: Load dynamic content from datastore
     yield from picoweb.start_response(resp)
-    yield from app.render_template(resp, "index.html", ("[connected ssid here]", "[logging service here]", "[version no. here]"))
+    yield from app.render_template(resp, "index.html", ("[connected ssid here]", logger, "[version no. here]"))
 
 @app.route("/networks", methods=['GET', 'POST'])
 def networks(req, resp):
     gc.collect()
-    f = open("datastore/network.db", "r+b")
-    db = btree.open(f)
     if req.method == 'POST':
+        f = open("datastore/network.db", "r+b")
+        db = btree.open(f)
         yield from req.read_form_data()
         if req.form.get('connect'):
             # Save process form submission
@@ -59,17 +55,12 @@ def networks(req, resp):
             # TODO: attempt to connect to network requested in form
         elif req.form.get('forget'):
             del db[req.form.get('ssid')[0]]
+        db.close()
+        f.close()
 
-    # Load networks from db
     # TODO: discover which network is connected (if any)
     connected_network = 'network1'
-    # TODO: Load network data from WIFI and merge with saved data
-    networks = []
-    for key in db:
-        networks.append(Network(key.decode("utf-8"), db[key].decode("utf-8")))
-    db.close()
-    f.close()
-    # TODO: sort network list: 1)connected 2)remembered 3)discovered secondary sort by signal strength if possible
+    networks = scan_networks()
     yield from picoweb.start_response(resp)
     yield from app.render_template(resp, "networks.html", (networks, connected_network))
 
@@ -95,10 +86,11 @@ def logging(req, resp):
                 "region": req.form.get('region')[0],
             })
         db.close()
-        f.close()    
-        # TODO: Crosscheck this is the correct way to do redirection after form processing
+        f.close()
+        # TODO: Redirect not working?, memory problem?
+        # TODO: Change redirect URL to dynamic value.
         yield from resp.awrite("HTTP/1.0 308 Redirect\r\n")
-        yield from resp.awrite("Location:/ \r\n")
+        yield from resp.awrite("Location: http://192.168.4.1:8081/\r\n")
     else:   
         yield from picoweb.start_response(resp)
         yield from app.render_template(resp, "logging.html",(ujson.loads(db['thingspeak']), ujson.loads(db['awsiot']), db['service'].decode('utf-8')))
@@ -123,16 +115,17 @@ def device(req, resp):
         db[b"eci2_ugain"] = req.form.get("eci2_ugain")[0]
         db.close()
         f.close()
-        # Redirect to homepage
-        yield from resp.awrite("HTTP/1.0 308 Redirect\r\n")
-        yield from resp.awrite("Location:/ \r\n")
-    f = open("datastore/config.db", "r+b")
-    db = btree.open(f)
-    # TODO: Check if passing db saves any *real* memory.
-    yield from picoweb.start_response(resp)
-    yield from app.render_template(resp, "hardware.html",(db,))
-    db.close()
-    f.close()
+        # TODO: Redirect not working?, memory problem?
+        yield from resp.awrite("HTTP/1.0 308 Redirect \r\n")
+        yield from resp.awrite("Location: http://192.168.4.1:8081/\r\n")
+    else:
+        f = open("datastore/config.db", "r+b")
+        db = btree.open(f)
+        # TODO: Check if passing db saves any *real* memory - is this a weird way to pass variables to template?
+        yield from picoweb.start_response(resp)
+        yield from app.render_template(resp, "hardware.html",(db,))
+        db.close()
+        f.close()
 
 @app.route("/firmware")
 def device(req, resp):
