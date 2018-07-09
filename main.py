@@ -2,118 +2,137 @@ import logging
 import utemplate
 import uasyncio
 import picoweb
-import ure as re
+import ujson
+import btree
 import gc
 
+# Uncomment to create new databases
+#from datastore import data
+#data.make_dbs()
+
 from wifiConnect import *
+
 first_run = True
 if first_run:
     start_ap()
 else:
     do_connect('blynkspot', 'blynkpass')
+ip = get_ip()   
 
-ip = get_ip()
-
-# Temporary data
-import temp_data
-network_list = scan_networks()
+#ip = "127.0.0.1"
 
 app = picoweb.WebApp(None)
 
-
+# TODO: Refile classes (or remove them entirely, they may contribute to memory issues?)
+class Alert:
+    def __init__(self,type='info',message=''):
+        self.type = type
+        self.message = message
+        
+        
 @app.route("/")
 def index(req, resp):
     gc.collect()
+    f = open("datastore/logger.db", "r+b")
+    db = btree.open(f)
+    logger = db['service'].decode('utf-8')
+    db.close()
+    f.close() 
+    # TODO: Load dynamic content from datastore
     yield from picoweb.start_response(resp)
-    yield from app.render_template(resp, "index.html", (network_list[0], temp_data.active_logger, temp_data.version))
-
+    yield from app.render_template(resp, "index.html", ("[connected ssid here]", logger, "[version no. here]"))
 
 @app.route("/networks", methods=['GET', 'POST'])
 def networks(req, resp):
     gc.collect()
-    if(req.method == 'POST'):
-        # Process form
+    if req.method == 'POST':
+        f = open("datastore/network.db", "r+b")
+        db = btree.open(f)
         yield from req.read_form_data()
-        ssid = req.form.get('ssid')[0]
-        pwd = req.form.get('pwd')[0]
-        print('*'*20)
         if req.form.get('connect'):
-            print('connect to network: %s / pwd:%s' % (ssid, pwd))
-            do_connect(ssid, pwd)
+            # Save process form submission
+            db[req.form.get('ssid')[0]] = req.form.get('pwd')[0].encode('utf-8')
+            # TODO: attempt to connect to network requested in form
         elif req.form.get('forget'):
-            print('Forget network: %s ' % ssid)
-        print('*'*20)
+            del db[req.form.get('ssid')[0]]
+        db.close()
+        f.close()
 
-    # TODO:
-    # Retrieve found and saved networks.
-    # Attempt to connect to saved network/s
-    # Merge lists and pass to template
-    network_list = scan_networks()
+    # TODO: discover which network is connected (if any)
+    connected_network = 'network1'
+    networks = scan_networks()
     yield from picoweb.start_response(resp)
-    yield from app.render_template(resp, "networks.html", (network_list,))
+    yield from app.render_template(resp, "networks.html", (networks, connected_network))
 
-
-# When network list changes push updates to page
-@app.route("/event")
-def push_data(req, resp):
-    gc.collect()
-    print("Event source connected")
-    yield from resp.awrite("HTTP/1.0 200 OK\r\n")
-    yield from resp.awrite("Content-Type: text/event-stream\r\n")
-    yield from resp.awrite("\r\n")
-    i = 0
-    try:
-        while True:
-            yield from resp.awrite("data: %d\n\n" % i)
-            yield from uasyncio.sleep(1)
-            i += 1
-    except OSError:
-        print("Event source connection closed")
-        yield from resp.aclose()
-
-
-@app.route("/logging")
+@app.route("/logging", methods=['GET','POST'])
 def logging(req, resp):
     gc.collect()
-    yield from picoweb.start_response(resp)
-    yield from app.render_template(resp, "logging.html", (temp_data.log_ts, temp_data.log_aws, temp_data.active_logger))
-
+    f = open("datastore/logger.db", "r+b")
+    db = btree.open(f)
+    if req.method == 'POST':
+        yield from req.read_form_data()
+        db["service"] = req.form.get('service')[0]
+        if req.form.get('service')[0] == "thingspeak":
+            db[b"thingspeak"] = ujson.dumps({
+                "name": "ThingSpeak",
+                "key": req.form.get('ts_key')[0]
+            })
+        elif req.form.get('service')[0] == "awsiot":
+            db[b"awsiot"] = ujson.dumps({
+                "name": "Amazon Web Service, IoT",
+                "cert": req.form.get('cert')[0],
+                "key": req.form.get('aws_key')[0],
+                "subdomain": req.form.get('subdomain')[0],
+                "region": req.form.get('region')[0],
+            })
+        db.close()
+        f.close()
+        # TODO: Redirect not working?, memory problem?
+        # TODO: Change redirect URL to dynamic value.
+        yield from resp.awrite("HTTP/1.0 308 Redirect\r\n")
+        yield from resp.awrite("Location: http://192.168.4.1:8081/\r\n")
+    else:   
+        yield from picoweb.start_response(resp)
+        yield from app.render_template(resp, "logging.html",(ujson.loads(db['thingspeak']), ujson.loads(db['awsiot']), db['service'].decode('utf-8')))
+        db.close()
+        f.close() 
 
 @app.route("/hardware")
 def device(req, resp):
     gc.collect()
-    alert = temp_data.Alert()
     if req.method == 'POST':
-        alert.type = 'success'
-        alert.message = '<p>The hardware settings have been applied. Try setting a non-integer to see a failure alert.<p>'
-        fields = ['ECI1_crc1', 'ECI1_crc2', 'ECI1_gain', 'ECI1_ugain',
-                  'ECI2_crc1', 'ECI2_crc2', 'ECI2_gain', 'ECI2_ugain']
-        input = ''
-        print('*'*20)
-        print('Save and apply settings:')
         yield from req.read_form_data()
-        for field in fields:
-            input = req.form.get(field)[0]
-            print('update %s: %s' % (field, input))
-            try:
-                int(input)
-            except:
-                alert.type = 'failure'
-                alert.message = '<p>Only integers please. Your settings have not been saved.</p>'
-        print('*'*20)
-
-    # TODO validate data and include failure alert message
-
-    yield from picoweb.start_response(resp)
-    yield from app.render_template(resp, "hardware.html", (temp_data.config, alert))
-
+        #TODO: field validation
+        f = open("datastore/config.db", "r+b")
+        db = btree.open(f)
+        db[b"eci1_crc1"] = req.form.get("eci1_crc1")[0]
+        db[b"eci1_crc2"] = req.form.get("eci1_crc2")[0]
+        db[b"eci1_gain"] = req.form.get("eci1_gain")[0]
+        db[b"eci1_ugain"] = req.form.get("eci1_ugain")[0]
+        db[b"eci2_crc1"] = req.form.get("eci2_crc1")[0]
+        db[b"eci2_crc2"] = req.form.get("eci2_crc2")[0]
+        db[b"eci2_gain"] = req.form.get("eci2_gain")[0]
+        db[b"eci2_ugain"] = req.form.get("eci2_ugain")[0]
+        db.close()
+        f.close()
+        # TODO: Redirect not working?, memory problem?
+        yield from resp.awrite("HTTP/1.0 308 Redirect \r\n")
+        yield from resp.awrite("Location: http://192.168.4.1:8081/\r\n")
+    else:
+        f = open("datastore/config.db", "r+b")
+        db = btree.open(f)
+        # TODO: Check if passing db saves any *real* memory - is this a weird way to pass variables to template?
+        yield from picoweb.start_response(resp)
+        yield from app.render_template(resp, "hardware.html",(db,))
+        db.close()
+        f.close()
 
 @app.route("/firmware")
 def device(req, resp):
     gc.collect()
+    # TODO: Implement dynamic data
     yield from picoweb.start_response(resp)
-    yield from app.render_template(resp, "firmware.html", (temp_data.version, temp_data.latest))
-
+    yield from app.render_template(resp, "firmware.html", ("0.0.1", "0.0.2"))
 
 import logging
 logging.basicConfig(level=logging.INFO)

@@ -1,7 +1,7 @@
 import network
-from temp_data import Network
 import machine
 import ubinascii
+import btree
 
 
 def do_connect(ssid, password):
@@ -27,13 +27,29 @@ def scan_networks():
     sta_if = network.WLAN(network.STA_IF)
     sta_if.active(True)
     nets = sta_if.scan()
-    networks = []
-    # Convert dict to list of objects
-    i = 0
+    # Note: Networks may appear multiple times. raw list is reduced to single instance of each network
+    networks = {}
     for n in nets:
-        networks.append(Network(i, n[0].decode("utf-8"), n[3], '', n[5],))
-        # Sort
-        networks.sort(key=lambda n: (str(n.connected), n.ssid), reverse=True)
+        ssid = n[0].decode("utf-8")
+        if ssid not in networks:
+            networks[ssid] = {
+                "ssid": ssid,
+                "str":n[3],
+                "pwd":''
+            }
+        elif n[3] > networks[ssid]['str']:
+            networks[n[0].decode("utf-8")]['str'] = n[3]
+    # Incorporate saved passwords
+    f = open("datastore/network.db", "r+b")
+    db = btree.open(f)
+    for key in db:
+        if key.decode("utf-8") in networks:
+            networks[key.decode("utf-8")]['pwd'] = db[key].decode("utf-8")
+    db.close()
+    f.close()
+    networks = list(networks.values())
+    # TODO: include 'connected' in sort order)
+    networks.sort(key=lambda n:(n['pwd'], n['str']), reverse=True)
     return networks
 
 

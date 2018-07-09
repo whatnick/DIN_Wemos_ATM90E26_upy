@@ -10,13 +10,18 @@
                 <li>
                     <a href="/networks">
                         Manage network connection
-                        <span class="details">Direct access point, no network connected.</span>
+                        <span class="details">Connected to: {{ network }}</span>
                     </a>
                 </li>
                 <li>
                     <a href="/logging">
                         Data logging service
-                        <span class="details">Data stored locally only.</span></a>
+                        {% if logger %}
+                        <span class="details">Logging service: {{ logger }}</span>
+                        {% else %}
+                        <span class="details">No service selected</span>
+                        {% endif %}
+                    </a>
                 </li>
                 <li>
                     <a href="/hardware">
@@ -26,7 +31,7 @@
                 <li>
                     <a href="/firmware">
                         Update firmware
-                        <span class="details">Current version: 0.0.1</span>
+                        <span class="details">Version: {{ version }}</span>
                     </a>            
                 </li>
             </ul>

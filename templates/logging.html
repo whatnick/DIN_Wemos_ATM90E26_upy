@@ -1,4 +1,4 @@
-{% args log_ts, log_aws, active_logger %}
+{% args thingspeak, awsiot, active_logger %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -12,58 +12,58 @@
                     class="ui__body ani_height" 
                     :style="{ height: formheight }"
                     v-on:transitionend="ani_end"
-                    
                 >
-                    <form ref="form" class="form form__logging">
+                    <form ref="vform" class="form form__logging" method="post">
                         <fieldset>
                             <p>
                                 <label>
                                     Logging service
                                     <select 
+                                        name="service"
                                         v-model="service"
                                         v-on:change="ani_start"
                                     >
-                                        <option>-- No service selected --</option>
-                                        <option{% if log_ts.name == active_logger %} selected{% endif %}>{{ log_ts.name }}</option>
-                                        <option{% if log_aws.name == active_logger %} selected{% endif %}>{{ log_aws.name }}</option>
+                                        <option{% if active_logger == '' %} selected{% endif %} value="">-- No service selected --</option>
+                                        <option{% if active_logger == 'thingspeak' %} selected{% endif %} value="thingspeak">{{ thingspeak['name'] }}</option>
+                                        <option{% if active_logger == 'awsiot' %} selected{% endif %} value="awsiot">{{ awsiot['name'] }}</option>
                                     </select>
                                 </label>
                             </p>
                         </fieldset>
-                        <fieldset {% if active_logger != 'ThingSpeak' %} v-cloak {% endif %} v-if="service=='ThingSpeak'">
+                        <fieldset {% if active_logger != 'thingspeak' %} v-cloak {% endif %} v-if="service=='thingspeak'">
                         <h3>ThingSpeak</h3>
                             <p>
                                 <label>
-                                    API Key <input type="text" value="{{ log_ts.key }}">
+                                    API Key <input name="ts_key" type="text" value="{{ thingspeak['key'] }}">
                                 </label>
                             </p>
                         </fieldset>
-                        <fieldset  {% if active_logger != 'AWS IoT' %} v-cloak {% endif %} v-if="service=='AWS IoT'">
+                        <fieldset  {% if active_logger != 'awsiot' %} v-cloak {% endif %} v-if="service=='awsiot'">
                             <h3>Amazon web service, IoT</h3>
                             <p>
                                 <label>
-                                    Certificate <input type="file" value="{{ log_aws.cert }}">
+                                    Certificate <input name="cert" type="file" value="{{ awsiot['cert'] }}">
                                 </label>
                             </p>
                             <p>
                                 <label>
-                                    Private key <input type="file" value="{{ log_aws.key }}">
+                                    Private key <input name="aws_key" type="file" value="{{ awsiot['key'] }}">
                                 </label>
                             </p>
                             <p>
                                 <label>
-                                    Endpoint subdomain <input type="text" value="{{ log_aws.subdomain }}">
+                                    Endpoint subdomain <input name="subdomain" type="text" value="{{ awsiot['subdomain'] }}">
                                 </label>
                             </p>
                             <p>
                                 <label>
-                                    Endpoint region <input type="text" value="{{ log_aws.region }}">
+                                    Endpoint region <input name="region" type="text" value="{{ awsiot['region'] }}">
                                 </label>
                             </p>
                         </fieldset>
                         <p>
                             <a class="button" href="/">Cancel</a> 
-                            <button>Save</button>
+                            <button name="submit" type="submit">Save</button>
                         </p>
                     </form>
                 </div>
@@ -71,30 +71,8 @@
         </div>
         {% include 'footer.tpl' %}
         <script>
-            var app = new Vue({
-                el: '#vue_app',
-                data: {
-                    formheight: "auto",
-                    service :"{{ active_logger }}",
-                },
-                methods:{
-                    ani_start: function(){
-                        var style = this.$refs.form.currentStyle || window.getComputedStyle(this.$refs.form);
-                        var margintop = parseInt(style.marginTop.slice(0,-2));
-                        var marginbottom = parseInt(style.marginBottom.slice(0,-2));
-                        this.formheight = this.$refs.form.offsetHeight + margintop + marginbottom + "px";
-                    },
-                    ani_end: function(){
-                        this.formheight = "auto";
-                    }
-                },
-                updated:function(){
-                    if(this.formheight != 'auto'){
-                        this.ani_start();
-                    }
-                }
-                
-            })
+            var active_logger = "{{ active_logger }}"
         </script>
+        <script src="/static/logging.js"></script>
 	</body>
 </html>
