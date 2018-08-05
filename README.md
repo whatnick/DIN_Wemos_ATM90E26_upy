@@ -26,4 +26,4 @@ The code base is composed of multiple runnable python files. The main.py is desi
  function.
  
 ### IoT Servers
-The sample code here is targeted to self-hosted (Graphite)[http://graphite.readthedocs.io/en/latest/install.html]. Recommended methon of installing and running with all the dependencies in place is docker image.
+The sample code here is targeted to self-hosted (Graphite)[http://graphite.readthedocs.io/en/latest/install.html]. Recommended method for installing and running with all the dependencies in place is docker image.
