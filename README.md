@@ -1,4 +1,4 @@
-# DIN_Wemos_ATM90E26_upy
+# Micropython Firmware for DIN Rail Energy Monitor (ATM90E26/ATM90E36 and any future boards)
 Micropython code to run on the DIN rail dual ATM90E26 module.
 * Web Front End from [@john_newall](https://twitter.com/john_newall).
 Works on both ESP32 and ESP8266, better on ESP32 due to better RAM and CPU resources. Please read John's [excellent article](https://www.johnnewall.com/article/microcontroller-website-energy-monitor/) on web design with limited resources.
