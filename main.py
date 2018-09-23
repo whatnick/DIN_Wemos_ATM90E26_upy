@@ -17,9 +17,6 @@ if first_run:
     start_ap()
 else:
     do_connect('blynkspot', 'blynkpass')
-ip = get_ip()   
-
-#ip = "127.0.0.1"
 
 app = picoweb.WebApp(None)
 
@@ -37,31 +34,39 @@ def index(req, resp):
     db = ujson.load(f)
     logger = db['service']
     f.close() 
+    current_ip = get_ip()
+    current_ap = get_ap()
     # TODO: Load dynamic content from datastore
     yield from picoweb.start_response(resp)
-    yield from app.render_template(resp, "index.html", ("[connected ssid here]", logger, "[version no. here]"))
+    yield from app.render_template(resp, "index.html", (current_ap, logger, "[version no. here]"))
 
 @app.route("/networks", methods=['GET', 'POST'])
 def networks(req, resp):
     gc.collect()
     if req.method == 'POST':
         f = open("datastore/network.json", "r")
-        db = btree.open(f)
+        db = ujson.load(f)
+        f.close()
         yield from req.read_form_data()
         if req.form.get('connect'):
             # Save process form submission
-            db[req.form.get('ssid')[0]] = req.form.get('pwd')[0].encode('utf-8')
+            ssid = req.form.get('ssid')[0]
+            pwd = req.form.get('pwd')[0].encode('utf-8')
+            db[ssid] = pwd
             # TODO: attempt to connect to network requested in form
+            current_ip = do_connect(ssid,pwd)
         elif req.form.get('forget'):
             del db[req.form.get('ssid')[0]]
-        db.close()
+        f = open("datastore/network.json", "w")
+        ujson.dump(db,f)
+        f.flush()
         f.close()
 
     # TODO: discover which network is connected (if any)
-    connected_network = 'network1'
+    current_ip = get_ip()
     networks = scan_networks()
     yield from picoweb.start_response(resp)
-    yield from app.render_template(resp, "networks.html", (networks, connected_network))
+    yield from app.render_template(resp, "networks.html", (networks, current_ip))
 
 @app.route("/logging", methods=['GET','POST'])
 def logging(req, resp):
@@ -124,10 +129,11 @@ def device(req, resp):
     else:
         f = open("datastore/config.json", "r")
         db = ujson.load(f)
+        f.close()
         # TODO: Check if passing db saves any *real* memory - is this a weird way to pass variables to template?
         yield from picoweb.start_response(resp)
         yield from app.render_template(resp, "hardware.html",(db,))
-        f.close()
+        
 
 @app.route("/firmware")
 def device(req, resp):
@@ -139,4 +145,4 @@ def device(req, resp):
 import logging
 logging.basicConfig(level=logging.INFO)
 
-app.run(debug=True, host=ip)
+app.run(debug=True, host="0.0.0.0")

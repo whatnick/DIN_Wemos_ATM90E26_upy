@@ -16,9 +16,16 @@ def do_connect(ssid, password):
         return ip
 
 
+def get_ap():
+    if network.WLAN().isconnected():
+        sta = network.WLAN(network.STA_IF)
+        return sta.config('essid')
+    else:
+        return "[In AP Mode only]"        
+        
 def get_ip():
     if network.WLAN().isconnected():
-        return network.ifconfig()[0]
+        return network.WLAN().ifconfig()[0]
     else:
         return "0.0.0.0"
 
@@ -30,7 +37,7 @@ def scan_networks():
     # Note: Networks may appear multiple times. raw list is reduced to single instance of each network
     networks = {}
     for n in nets:
-        ssid = n[0]
+        ssid = n[0].decode('utf-8')
         if ssid not in networks:
             networks[ssid] = {
                 "ssid": ssid,
