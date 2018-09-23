@@ -1,5 +1,4 @@
 # Create data sources and populate with sample data
-import btree
 import ujson
 
 # TODO: Make decorator?
@@ -12,23 +11,24 @@ def make_dbs():
 
 def network_db():
     try:
-        f = open("datastore/network.db", "r+b")
+        f = open("datastore/network.json", "r")
     except OSError:
-        f = open("datastore/network.db", "w+b")
-        db = btree.open(f)
+        f = open("datastore/network.json", "w")
+        db = {}
         db[b"network1"] = b"didit"
         db[b"network2"] = b""
         db[b"network3"] = b""
         db[b"HiddenNetwork"] = b"shhhh!"
-        db.close()
+        ujson.dump(db,f)
+        f.flush()
         f.close()
 
 def logger_db():
     try:
-        f = open("datastore/logger.db", "r+b")
+        f = open("datastore/logger.json", "r")
     except OSError:
-        f = open("datastore/logger.db", "w+b")
-        db = btree.open(f)
+        f = open("datastore/logger.json", "w")
+        db = {}
         db[b"service"] = "awsiot"
         db[b"awsiot"] = ujson.dumps({
             "name": "Amazon Web Service, IoT",
@@ -41,16 +41,16 @@ def logger_db():
             "name": "ThingSpeak",
             "key": "123456g789p"
         })
-
-        db.close()
+        ujson.dump(db,f)
+        f.flush()
         f.close()
 
 def config_db():
     try:
-        f = open("datastore/config.db", "r+b")
+        f = open("datastore/config.json", "r")
     except OSError:
-        f = open("datastore/config.db", "w+b")
-        db = btree.open(f)
+        f = open("datastore/config.json", "w")
+        db = {}
         db[b"eci1_crc1"] = b"0"
         db[b"eci1_crc2"] = b"0"
         db[b"eci1_gain"] = b"0"
@@ -59,5 +59,6 @@ def config_db():
         db[b"eci2_crc2"] = b"0"
         db[b"eci2_gain"] = b"0"
         db[b"eci2_ugain"] = b"0"
-        db.close()
+        ujson.dump(db,f)
+        f.flush()
         f.close()    

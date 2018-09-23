@@ -62,28 +62,28 @@ def render(db):
                                     <p>
                                         <label>
                                         CRC1 <input name=\"eci1_crc1\" type=\"text\" value=\""""
-    yield str(db['eci1_crc1'].decode('utf-8'))
+    yield str(db['eci1_crc1'])
     yield """\">
                                         </label>
                                     </p>
                                     <p>
                                         <label>
                                         CRC2 <input name=\"eci1_crc2\" type=\"text\" value=\""""
-    yield str(db['eci1_crc2'].decode('utf-8'))
+    yield str(db['eci1_crc2'])
     yield """\">
                                         </label>
                                     </p>
                                     <p>
                                         <label>
                                         Gain <input name=\"eci1_gain\" type=\"text\" value=\""""
-    yield str(db['eci1_gain'].decode('utf-8'))
+    yield str(db['eci1_gain'])
     yield """\">
                                         </label>
                                     </p>
                                     <p>
                                         <label>
                                         U-Gain <input name=\"eci1_ugain\" type=\"text\" value=\""""
-    yield str(db['eci1_ugain'].decode('utf-8'))
+    yield str(db['eci1_ugain'])
     yield """\">
                                         </label>
                                     </p>
@@ -95,28 +95,28 @@ def render(db):
                                     <p>
                                         <label>
                                         CRC1 <input name=\"eci2_crc1\" type=\"text\" value=\""""
-    yield str(db['eci2_crc1'].decode('utf-8'))
+    yield str(db['eci2_crc1'])
     yield """\">
                                         </label>
                                     </p>
                                     <p>
                                         <label>
                                         CRC2 <input name=\"eci2_crc2\" type=\"text\" value=\""""
-    yield str(db['eci2_crc2'].decode('utf-8'))
+    yield str(db['eci2_crc2'])
     yield """\">
                                         </label>
                                     </p>
                                     <p>
                                         <label>
                                         Gain <input name=\"eci2_gain\" type=\"text\" value=\""""
-    yield str(db['eci2_gain'].decode('utf-8'))
+    yield str(db['eci2_gain'])
     yield """\">
                                         </label>
                                     </p>
                                     <p>
                                         <label>
                                         U-Gain <input name=\"eci2_ugain\" type=\"text\" value=\""""
-    yield str(db['eci2_ugain'].decode('utf-8'))
+    yield str(db['eci2_ugain'])
     yield """\">
                                         </label>
                                     </p>

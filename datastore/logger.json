@@ -1,0 +1,13 @@
+{"service":"awsiot",
+"awsiot":{
+"name": "Amazon Web Service, IoT",
+"cert": 12345678,
+"key": "123456g789p",
+"subdomain": "Saturn",
+"region": "Milkyway",
+},
+"thingspeak":{
+"name": "ThingSpeak",
+"key": "123456g789p"
+},
+}

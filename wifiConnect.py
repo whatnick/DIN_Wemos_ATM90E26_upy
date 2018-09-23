@@ -1,7 +1,7 @@
 import network
 import machine
 import ubinascii
-import btree
+import ujson
 
 
 def do_connect(ssid, password):
@@ -40,10 +40,10 @@ def scan_networks():
         elif n[3] > networks[ssid]['str']:
             networks[n[0].decode("utf-8")]['str'] = n[3]
     # Incorporate saved passwords
-    f = open("datastore/network.db", "r+b")
-    db = btree.open(f)
-    for key in db:
-        if key.decode("utf-8") in networks:
+    f = open("datastore/network.json", "r")
+    db = ujson.load(f)
+    for key in db.keys():
+        if key in networks:
             networks[key.decode("utf-8")]['pwd'] = db[key].decode("utf-8")
     db.close()
     f.close()

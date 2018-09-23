@@ -7,8 +7,8 @@ import btree
 import gc
 
 # Uncomment to create new databases
-#from datastore import data
-#data.make_dbs()
+from datastore import data
+data.make_dbs()
 
 from wifiConnect import *
 
@@ -33,10 +33,9 @@ class Alert:
 @app.route("/")
 def index(req, resp):
     gc.collect()
-    f = open("datastore/logger.db", "r+b")
-    db = btree.open(f)
-    logger = db['service'].decode('utf-8')
-    db.close()
+    f = open("datastore/logger.json", "r")
+    db = ujson.load(f)
+    logger = db['service']
     f.close() 
     # TODO: Load dynamic content from datastore
     yield from picoweb.start_response(resp)
@@ -46,7 +45,7 @@ def index(req, resp):
 def networks(req, resp):
     gc.collect()
     if req.method == 'POST':
-        f = open("datastore/network.db", "r+b")
+        f = open("datastore/network.json", "r")
         db = btree.open(f)
         yield from req.read_form_data()
         if req.form.get('connect'):
@@ -67,8 +66,9 @@ def networks(req, resp):
 @app.route("/logging", methods=['GET','POST'])
 def logging(req, resp):
     gc.collect()
-    f = open("datastore/logger.db", "r+b")
-    db = btree.open(f)
+    f = open("datastore/logger.json", "r")
+    db = ujson.load(f)
+    f.close()
     if req.method == 'POST':
         yield from req.read_form_data()
         db["service"] = req.form.get('service')[0]
@@ -85,7 +85,8 @@ def logging(req, resp):
                 "subdomain": req.form.get('subdomain')[0],
                 "region": req.form.get('region')[0],
             })
-        db.close()
+        f = open("datastore/logger.json", "w")
+        ujson.dump(db,f)
         f.close()
         # TODO: Redirect not working?, memory problem?
         # TODO: Change redirect URL to dynamic value.
@@ -93,8 +94,7 @@ def logging(req, resp):
         yield from resp.awrite("Location: http://192.168.4.1:8081/\r\n")
     else:   
         yield from picoweb.start_response(resp)
-        yield from app.render_template(resp, "logging.html",(ujson.loads(db['thingspeak']), ujson.loads(db['awsiot']), db['service'].decode('utf-8')))
-        db.close()
+        yield from app.render_template(resp, "logging.html",(db['thingspeak'], db['awsiot'], db['service']))
         f.close() 
 
 @app.route("/hardware")
@@ -103,8 +103,9 @@ def device(req, resp):
     if req.method == 'POST':
         yield from req.read_form_data()
         #TODO: field validation
-        f = open("datastore/config.db", "r+b")
-        db = btree.open(f)
+        f = open("datastore/config.json", "r")
+        db = ujson.load(f)
+        f.close()
         db[b"eci1_crc1"] = req.form.get("eci1_crc1")[0]
         db[b"eci1_crc2"] = req.form.get("eci1_crc2")[0]
         db[b"eci1_gain"] = req.form.get("eci1_gain")[0]
@@ -113,18 +114,19 @@ def device(req, resp):
         db[b"eci2_crc2"] = req.form.get("eci2_crc2")[0]
         db[b"eci2_gain"] = req.form.get("eci2_gain")[0]
         db[b"eci2_ugain"] = req.form.get("eci2_ugain")[0]
-        db.close()
+        f = open("datastore/config.json", "w")
+        ujson.dump(db,f)
+        f.flush()
         f.close()
         # TODO: Redirect not working?, memory problem?
         yield from resp.awrite("HTTP/1.0 308 Redirect \r\n")
         yield from resp.awrite("Location: http://192.168.4.1:8081/\r\n")
     else:
-        f = open("datastore/config.db", "r+b")
-        db = btree.open(f)
+        f = open("datastore/config.json", "r")
+        db = ujson.load(f)
         # TODO: Check if passing db saves any *real* memory - is this a weird way to pass variables to template?
         yield from picoweb.start_response(resp)
         yield from app.render_template(resp, "hardware.html",(db,))
-        db.close()
         f.close()
 
 @app.route("/firmware")
