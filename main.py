@@ -7,8 +7,8 @@ import btree
 import gc
 
 # Uncomment to create new databases
-from datastore import data
-data.make_dbs()
+#from datastore import data
+#data.make_dbs()
 
 from wifiConnect import *
 
