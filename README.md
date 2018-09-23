@@ -32,7 +32,10 @@ The **mpy-fuse** is particularly useful for copying over the large selection of 
 On Windows Subsystem for Linux **mpy-sync** is a viable but slower alternative for copying files via terminal.
 A sample **mpy-sync** command is shown below:
 
-`mpy-sync `
+`sudo mpy-sync --port /dev/ttyS10 DIN_Wemos_ATM90E26_upy/`
+
+**NOTE: For mpy-sync to work it needs to access the REPL, ensure any running code is stopped and the ESP32 is in REPL mode before
+ attempting to sync code**
 
 ### Running
 The code base is composed of multiple runnable python files. The main.py is designed to get basic functionality going,
