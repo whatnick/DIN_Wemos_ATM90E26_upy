@@ -9,16 +9,30 @@ His [presentation at PyconAU2017](https://2017.pycon-au.org/schedule/presentatio
 ### Setup
 If you would like to build your own micropython image please follow the ESP32 micropython instructions 
 [here](https://github.com/micropython/micropython/blob/master/ports/esp32/README.md) or download a pre-built 
-one [here](http://micropython.org/download#esp32).
+one [here](http://micropython.org/download#esp32). [Windows Subsystem for Linux](https://blogs.msdn.microsoft.com/wsl/),
+[Babun](http://babun.github.io/) or a VM is recommended for building on Windows.
 
+The micropython packages can be baked in using instructions [here](https://docs.micropython.org/en/latest/pyboard/reference/packages.html#cross-installing-packages-with-freezing):
+ - `../unix/micropython -m upip install -p modules picoweb`
+ - `../unix/micropython -m upip install -p modules micropython-logging`
+ - ` ../unix/micropython -m upip install -p modules utemplate`
+ - `../unix/micropython -m upip install -p modules micropython-btreedb`
+ - `../unix/micropython -m upip install -p modules micropython-btree`
 
-### Loading code
+After firmware is built push it onto the ESP32 as below (I did not add my user to dialout, hence the sudo):
+ - ` sudo esptool.py --port /dev/ttyS10 write_flash -z 0x1000 build/firmware.bin`
+
+### Loading Micropython code
 For best performance this code uses a custom micropython image which can be obtained
 [here](https://drive.google.com/file/d/0B7PX_Donnye2ZjB5cWd1X0NpOTFhQ29BT3pjdC1rYXdkRG5v/view). 
 This image has picoweb and a few modules **frozen** to minimise runtime RAM footprint.
 Flash this image and copy over the required Python, HTML, CSS and JS files for the web application
 using the serial thunking approach developed by [mpy-utils](https://github.com/nickzoic/mpy-utils).
 The **mpy-fuse** is particularly useful for copying over the large selection of files which form this project.
+On Windows Subsystem for Linux **mpy-sync** is a viable but slower alternative for copying files via terminal.
+A sample **mpy-sync** command is shown below:
+
+`mpy-sync `
 
 ### Running
 The code base is composed of multiple runnable python files. The main.py is designed to get basic functionality going,
@@ -26,4 +40,9 @@ The code base is composed of multiple runnable python files. The main.py is desi
  function.
  
 ### IoT Servers
-The sample code here is targeted to self-hosted [Graphite](http://graphite.readthedocs.io/en/latest/install.html). Recommended method for installing and running with all the dependencies in place is docker image.
+The sample code here is targeted to self-hosted [Graphite](http://graphite.readthedocs.io/en/latest/install.html). Recommended method for installing and running with all the dependencies in place is a docker image on Linux and Vagrant on Windows. Alternative IoT data hosts are:
+ - AWS IoT
+ - EmonCMS
+ - Thingspeak
+ - Blynk
+ - and many many more ....
