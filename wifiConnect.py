@@ -30,7 +30,7 @@ def scan_networks():
     # Note: Networks may appear multiple times. raw list is reduced to single instance of each network
     networks = {}
     for n in nets:
-        ssid = n[0].decode("utf-8")
+        ssid = n[0]
         if ssid not in networks:
             networks[ssid] = {
                 "ssid": ssid,
@@ -38,14 +38,17 @@ def scan_networks():
                 "pwd":''
             }
         elif n[3] > networks[ssid]['str']:
-            networks[n[0].decode("utf-8")]['str'] = n[3]
+            networks[n[0]['str']] = n[3]
     # Incorporate saved passwords
     f = open("datastore/network.json", "r")
     db = ujson.load(f)
+    f.close()
     for key in db.keys():
         if key in networks:
-            networks[key.decode("utf-8")]['pwd'] = db[key].decode("utf-8")
-    db.close()
+            networks[key]['pwd'] = db[key]
+    f = open("datastore/network.json", "w")
+    ujson.dump(db,f)
+    f.flush()
     f.close()
     networks = list(networks.values())
     # TODO: include 'connected' in sort order)
@@ -56,6 +59,6 @@ def scan_networks():
 def start_ap():
     ap = network.WLAN(network.AP_IF)
     ap.active(True)
-    ap.config(essid='EMON_'+str(ubinascii.hexlify(machine.unique_id()))[-4:])
+    ap.config(essid='EMON_'+str(ubinascii.hexlify(machine.unique_id()))[-5:-1])
     ap.config(authmode=3, password='whatnick')
     return ap
